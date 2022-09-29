@@ -1,5 +1,5 @@
 <template>
-  <div class="container my-5">
+  <div class="container">
     <h1>Product List</h1>
     <div class="alert alert-success" v-if="success">
       {{ success }}
@@ -20,9 +20,11 @@
           <td>{{ product.id }}</td>
           <td>{{ product.name }}</td>
           <td>{{ product.price }}</td>
-          <td>{{ product.image}} </td>
           <td>
-            <a href="#" class="btn btn-outline-secondary me-2">Edit</a>
+            <img :src="'storage/'+product.image" alt="Product Image" width="70">
+          </td>
+          <td>
+            <Link :href="`product/${product.id}/edit`" class="btn btn-outline-secondary me-2">Edit</Link>
             <button class="btn btn-outline-danger" @click="destroy(product.id)">Delete</button>
           </td>
         </tr>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -15,7 +16,7 @@ class ProductController extends Controller
     public function index()
     {
         return Inertia::render('Product/Index', [
-            'products' => Product::all()
+            'products' => Product::orderBy('id', 'desc')->get()
         ]);
     }
 
@@ -32,7 +33,22 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'price' => 'required',
+            'image' => 'required|mimes:jpg,png,jpeg'
+        ]);
+        if($request->hasFile('image')){
+            $fileName = time().'.'.$request->image->extension();
+            Storage::putFileAs('public/images', $request->image, $fileName);
+            $request->image = 'images/'.$fileName;
+        }
+        Product::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'image' => $request->image
+        ]);
+        return redirect('product')->with('success', 'Product created successfully');
     }
 
     /**
@@ -52,9 +68,9 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Product $product)
     {
-        //
+        return Inertia::render('Product/Edit', compact('product'));
     }
 
     /**
@@ -64,9 +80,35 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'price' => 'required',
+            'image' => 'nullable'
+        ]);
+        $product = Product::find($request->id);
+        info($product);
+        if($request->hasFile('image')){
+            $request->validate([
+                'image' => 'required|mimes:jpg,png,jpeg'
+            ]);
+            $filePath = "storage/".$product->image;
+            info($filePath);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+            $fileName = time() . '.' . $request->image->extension();
+            Storage::putFileAs('public/images', $request->image, $fileName);
+            $request->image = "images/" . $fileName;
+        }
+        $product->update([
+            'name' => $request->name,
+            'price' => $request->price,
+            'image' => $request->image
+        ]);
+        
+        return redirect('product')->with('success', 'Product updated successfully');
     }
 
     /**
@@ -77,6 +119,10 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        $filePath = "storage/".$product->image;
+        if(file_exists($filePath)){
+            unlink($filePath);
+        }
         $product->delete();
         return redirect('product')->with('success', 'Product delete successfully');
     }

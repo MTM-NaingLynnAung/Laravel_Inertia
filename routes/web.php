@@ -20,6 +20,8 @@ Route::get('/', function () {
 });
 Route::resource('/product', ProductController::class);
 
+Route::post('/product/update/{id}', [ProductController::class, 'update']);
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
