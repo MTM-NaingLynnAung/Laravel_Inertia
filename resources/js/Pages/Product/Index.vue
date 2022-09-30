@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container my-5">
     <h1>Product List</h1>
     <div class="alert alert-success" v-if="success">
       {{ success }}
@@ -43,7 +43,10 @@ export default {
   ],
   methods: {
     destroy(id){
-      Inertia.delete(`/product/${id}`);
+      Inertia.delete(`/product/${id}`, {
+      onBefore: () => confirm('Are you sure you want to delete this product?'),
+      });
+      
     }
   }
 }

@@ -15,9 +15,10 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-});
+// Route::get('/', function () {
+//     return Inertia::render('Welcome');
+// });
+Route::redirect('/', '/product');
 Route::resource('/product', ProductController::class);
 
 Route::post('/product/update/{id}', [ProductController::class, 'update']);

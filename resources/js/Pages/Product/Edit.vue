@@ -48,7 +48,6 @@ export default {
     },
     onChange(e) {
       this.form.image = e.target.files[0]
-      console.log(this.form.image)
     }
   }
 }
